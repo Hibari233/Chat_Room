@@ -3,6 +3,7 @@ package entity;
 import java.io.OutputStream;
 import java.util.HashMap;
 import java.util.Map;
+
 public class Response {
     private ResponseStatus status;
     private Map<String, Object> datamap;
