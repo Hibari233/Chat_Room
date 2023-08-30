@@ -12,6 +12,7 @@ public enum ResponseStatus {
     /**
      * 请求的资源未找到
      */
+
     NOT_FOUND,
     /**
      * 错误的请求对象
