@@ -10,12 +10,22 @@ public class User {
     private String sex;
     private String password;
 
+    public User(String nickName, String password ,String sex) throws NoSuchAlgorithmException {
+        this.nickName = nickName;
+        this.password = hashPassword(password);
+        this.sex=sex;
+    }
+
     public User(String nickName, String password) throws NoSuchAlgorithmException {
         this.nickName = nickName;
         this.password = hashPassword(password);
-    };
+    }
 
-    public long getID() {return this.id;}
+
+    public long getId() {return this.id;}
+    public void setId(long id){
+        this.id = id;
+    }
 
     public void setNickName(String name) {this.nickName = name;}
 
@@ -25,6 +35,8 @@ public class User {
         return this.password.equals(hashPassword(password));
     }
 
+    public String getPassword() {return this.password;}
+
     public void setPassword(String password) throws NoSuchAlgorithmException {
         this.password = hashPassword(password);
     }
@@ -32,5 +44,6 @@ public class User {
     public void setSex(String sex) {this.sex = sex;}
 
     public String getSex() {return this.sex;}
+
 }
 
