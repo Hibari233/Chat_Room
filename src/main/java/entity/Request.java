@@ -6,6 +6,7 @@ import com.alibaba.fastjson2.*;
 
 public class Request {
     private String action;
+    private ResponseType type;
     /*
     定义用户的属性，这里String代表的为发送的格式，Object为发送的类
     使用String类型，将Object序列化为String类型
@@ -14,6 +15,14 @@ public class Request {
 
     public Request() {
         this.attributesMap = new HashMap<String, Object>();
+    }
+
+    public ResponseType getType() {
+        return type;
+    }
+
+    public void setType(ResponseType type) {
+        this.type = type;
     }
 
     public String getAction() {

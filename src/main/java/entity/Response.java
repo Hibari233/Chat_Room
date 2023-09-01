@@ -7,6 +7,7 @@ import com.alibaba.fastjson2.*;
 
 public class Response {
     private ResponseStatus status;
+    private ResponseType type;
    /*
    同理，详情见Request
     */
@@ -19,6 +20,12 @@ public class Response {
         this.datamap = new HashMap<String, Object>();
     }
 
+    public ResponseType getType() {
+        return type;
+    }
+    public void setType(ResponseType type) {
+        this.type = type;
+    }
     public ResponseStatus getStatus() { return status; }
     public void setStatus(ResponseStatus status) { this.status = status; }
     public Map<String, Object> getDataMap() { return datamap; }
