@@ -1,4 +1,6 @@
-package entity;
+package client.entity;
+
+import entity.User;
 
 import javax.swing.*;
 import java.util.List;
