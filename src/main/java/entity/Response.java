@@ -3,29 +3,33 @@ package entity;
 import java.io.OutputStream;
 import java.util.HashMap;
 import java.util.Map;
+import com.alibaba.fastjson2.*;
 
 public class Response {
     private ResponseStatus status;
-    /*
-    定义用户的属性，这里Long代表的为用户id，Object为用户实体属性
-     */
-    private Map<Long, Object> datamap;
+   /*
+   同理，详情见Request
+    */
+    private Map<String, String> datamap;
 
     private OutputStream outputStream;
 
     public Response() {
         this.status = ResponseStatus.OK;
-        this.datamap = new HashMap<Long, Object>();
+        this.datamap = new HashMap<String, String>();
     }
 
     public ResponseStatus getStatus() { return status; }
     public void setStatus(ResponseStatus status) { this.status = status; }
-    public Map<Long, Object> getDataMap() { return datamap; }
-    public void setDataMap(Map<Long, Object> datamap) { this.datamap = datamap; }
+    public Map<String, String> getDataMap() { return datamap; }
+    public void setDataMap(Map<String, String> datamap) { this.datamap = datamap; }
     public OutputStream getOutputStream() { return outputStream; }
     public void setOutputStream(OutputStream outputStream) { this.outputStream = outputStream; }
-    public void setData(Long name, Object value) {this.datamap.put(name, value); }
-    public void getData(Long name) { this.datamap.get(name); }
-    public void removeData(Long name) {this.datamap.remove(name); }
+    public void setData(String name, Object object) {
+        String value = JSON.toJSONString(object);
+        this.datamap.put(name, value);
+    }
+    public void getData(String name) { this.datamap.get(name); }
+    public void removeData(String name) {this.datamap.remove(name); }
     public void clearData() { this.datamap.clear(); }
 }
