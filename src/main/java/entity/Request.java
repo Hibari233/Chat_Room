@@ -6,14 +6,23 @@ import com.alibaba.fastjson2.*;
 
 public class Request {
     private String action;
+    private ResponseType type;
     /*
     定义用户的属性，这里String代表的为发送的格式，Object为发送的类
     使用String类型，将Object序列化为String类型
      */
-    private Map<String, String> attributesMap;
+    private Map<String, Object> attributesMap;
 
     public Request() {
-        this.attributesMap = new HashMap<String, String>();
+        this.attributesMap = new HashMap<String, Object>();
+    }
+
+    public ResponseType getType() {
+        return type;
+    }
+
+    public void setType(ResponseType type) {
+        this.type = type;
     }
 
     public String getAction() {
@@ -22,7 +31,7 @@ public class Request {
 
     public void setAction(String action) {this.action = action;}
 
-    public Map<String, String> getAttributesMap() {
+    public Map<String, Object> getAttributesMap() {
         return attributesMap;
     }
 
@@ -30,8 +39,7 @@ public class Request {
         return this.attributesMap.get(name);
     }
 
-    public void setAttribute(String name, Object object) {
-        String value = JSON.toJSONString(object);
+    public void setAttribute(String name, Object value) {
         this.attributesMap.put(name, value);
     }
 

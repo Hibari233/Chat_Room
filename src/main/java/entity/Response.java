@@ -7,26 +7,32 @@ import com.alibaba.fastjson2.*;
 
 public class Response {
     private ResponseStatus status;
+    private ResponseType type;
    /*
    同理，详情见Request
     */
-    private Map<String, String> datamap;
+    private Map<String, Object> datamap;
 
     private OutputStream outputStream;
 
     public Response() {
         this.status = ResponseStatus.OK;
-        this.datamap = new HashMap<String, String>();
+        this.datamap = new HashMap<String, Object>();
     }
 
+    public ResponseType getType() {
+        return type;
+    }
+    public void setType(ResponseType type) {
+        this.type = type;
+    }
     public ResponseStatus getStatus() { return status; }
     public void setStatus(ResponseStatus status) { this.status = status; }
-    public Map<String, String> getDataMap() { return datamap; }
-    public void setDataMap(Map<String, String> datamap) { this.datamap = datamap; }
+    public Map<String, Object> getDataMap() { return datamap; }
+    public void setDataMap(Map<String, Object> datamap) { this.datamap = datamap; }
     public OutputStream getOutputStream() { return outputStream; }
     public void setOutputStream(OutputStream outputStream) { this.outputStream = outputStream; }
-    public void setData(String name, Object object) {
-        String value = JSON.toJSONString(object);
+    public void setData(String name, Object value) {
         this.datamap.put(name, value);
     }
     public void getData(String name) { this.datamap.get(name); }
