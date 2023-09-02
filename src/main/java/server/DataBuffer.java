@@ -1,6 +1,8 @@
 package server;
 
 import entity.User;
+import server.entity.OnlineUserTableModel;
+import server.entity.RegistedUserTableModel;
 
 
 import java.awt.*;
@@ -20,10 +22,10 @@ public class DataBuffer {
     public static Properties configProp;
     // 已注册用户表的Model
 
-//    public static RegistedUserTableModel registedUserTableModel;
-//    // 当前在线用户表的Model
-//    public static OnlineUserTableModel onlineUserTableModel;
-//    // 当前服务器所在系统的屏幕尺寸
+    public static RegistedUserTableModel registedUserTableModel;
+    // 当前在线用户表的Model
+    public static OnlineUserTableModel onlineUserTableModel;
+    // 当前服务器所在系统的屏幕尺寸
     public static Dimension screenSize;
 
 

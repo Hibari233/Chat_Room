@@ -24,12 +24,12 @@ public class OnlineUserTableModel extends AbstractTableModel {
         return this.attribute[columnIndex];
     }
 
-    public void AddRow(String[] value) {
+    public void addRow(String[] value) {
         int rowIndex = rows.size();
         rows.add(value);
         fireTableRowsInserted(rowIndex, rowIndex);
     }
-    public void RemoveRow(long id) {
+    public void removeRow(long id) {
         int rowIndex = Integer.parseInt(null);
         for(int i = 0; i < rows.size(); i++) {
             if (String.valueOf(id).equals(getValueAt(i, 0))) {
@@ -40,4 +40,5 @@ public class OnlineUserTableModel extends AbstractTableModel {
         rows.remove(rowIndex);
         fireTableRowsDeleted(rowIndex, rowIndex);
     }
+
 }

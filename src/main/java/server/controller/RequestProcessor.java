@@ -1,6 +1,17 @@
 package server.controller;
 
+import java.io.*;
 import java.net.Socket;
+import java.security.NoSuchAlgorithmException;
+import java.util.concurrent.CopyOnWriteArrayList;
+
+import com.alibaba.fastjson2.JSON;
+import entity.*;
+import server.DataBuffer;
+import server.OnlineClientIOcache;
+import server.entity.UserService;
+import util.DatabaseUtil;
+import util.PasswordEncryption;
 
 public class RequestProcessor implements Runnable {
     private Socket socket;
@@ -9,7 +20,131 @@ public class RequestProcessor implements Runnable {
     }
 
     public void run() {
+        boolean quit_flag = false;
+        try {
+            BufferedReader reader = new BufferedReader(new InputStreamReader(socket.getInputStream()));
+            BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(socket.getOutputStream()));
+            while(!quit_flag) {
+                String request = reader.readLine();
+                Request req = JSON.parseObject(request, Request.class);
+                String action = req.getAction();
+                System.out.println("Server received Request action: " + action);
+
+                if(action.equals("userRegister")){
+
+                }
+                else if(action.equals("userLogin")){
+
+                }
+                else if(action.equals("exit")){
+
+                }
+                else if(action.equals("chat")){
+
+                }
+                else if(action.equals("shake")){
+
+                }
+                else{
+
+                }
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    // userRegister
+
+    public void register(BufferedReader inputStream, BufferedWriter outputStream, Request request) throws IOException {
+        // process
+        User user = (User)request.getAttribute("user");
+        UserService userService = new UserService();
+        userService.addUser(user);
+
+        // response
+        Response response = new Response();
+        response.setStatus(ResponseStatus.OK);
+        response.setData("user", user);
+        outputStream.write(JSON.toJSONString(response));
+        outputStream.flush();
+
+        // add user into registed user list
+        // TODO: 把用户加入用户列表中
+    }
+
+    public void login(BufferedReader inputStream, BufferedWriter outputStream, Request request) throws IOException, NoSuchAlgorithmException {
+        // process basic information
+        String id = (String)request.getAttribute("id");
+        String password = (String)request.getAttribute("password");
+        String password_encrypted = PasswordEncryption.hashPassword(password);
+
+        // use UserService to login
+        UserService userService = new UserService();
+        User user = userService.login(Long.parseLong(id), password_encrypted);
+
+        // response
+
+        Response response = new Response();
+
+        // check user whether login successfully
+        if(user != null) {
+            // grab user from online user list
+            if (DataBuffer.onlineUsersMap.containsKey(user.getId())) {
+                // user has already logged in
+
+                // response
+                response.setStatus(ResponseStatus.OK);
+                response.setData("message", "user has already logged in");
+                outputStream.write(JSON.toJSONString(response));
+                outputStream.flush();
+            }
+            else {
+                // user login
+                // add user into online user list
+                DataBuffer.onlineUsersMap.put(user.getId(), user);
+
+                // add online user list into the response
+                response.setData("onlineUsersMap", new CopyOnWriteArrayList<User>(DataBuffer.onlineUsersMap.values()));
+
+                // response
+                response.setStatus(ResponseStatus.OK);
+                response.setData("user", user);
+                outputStream.write(JSON.toJSONString(response));
+                outputStream.flush();
+
+                // response to other client (notify other client user login)
+                Response response_to_all = new Response();
+                response_to_all.setType(ResponseType.LOGIN);
+                response_to_all.setData("loginUser", user);
+                sendToAll(response_to_all);
+
+                // put user into online user io cache
+                DataBuffer.onlineUserIOCacheMap.put(user.getId(), new OnlineClientIOcache(inputStream, outputStream));
+
+                // put user into online user table model
+                String[] UserRow = {String.valueOf(user.getId()), user.getNickName(), user.getSex()};
+                DataBuffer.onlineUserTableModel.addRow(UserRow);
+            }
+        }
+        else {
+            // login failed
+            response.setStatus(ResponseStatus.OK);
+            response.setData("msg", "账号或密码不正确！");
+            // response
+            outputStream.write(JSON.toJSONString(response));
+            outputStream.flush();
+        }
 
     }
 
+
+    // send to all online clients
+    private void sendToAll(Response response) throws IOException {
+        for(OnlineClientIOcache onlineUserIO : DataBuffer.onlineUserIOCacheMap.values()) {
+            BufferedWriter writer = onlineUserIO.getOutputStream();
+            writer.write(JSON.toJSONString(response));
+            writer.flush();
+        }
+    }
 }
