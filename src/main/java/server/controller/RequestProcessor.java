@@ -79,11 +79,10 @@ public class RequestProcessor implements Runnable {
         // process basic information
         String id = (String)request.getAttribute("id");
         String password = (String)request.getAttribute("password");
-        String password_encrypted = PasswordEncryption.hashPassword(password);
 
         // use UserService to login
         UserController userController = new UserController();
-        User user = userController.login(Long.parseLong(id), password_encrypted);
+        User user = userController.login(Long.parseLong(id), password);
 
         // response
 
