@@ -33,16 +33,16 @@ public class RequestProcessor implements Runnable {
                 System.out.println("Server received Request action: " + action);
 
                 if(action.equals("userRegister")){
-
+                    register(reader, writer, req);
                 }
                 else if(action.equals("userLogin")){
-
+                    login(reader, writer, req);
                 }
                 else if(action.equals("exit")){
-
+                    quit_flag = logout(reader, writer, req);
                 }
                 else if(action.equals("chat")){
-
+                    chat(req);
                 }
                 else if(action.equals("shake")){
 
@@ -161,7 +161,7 @@ public class RequestProcessor implements Runnable {
         DataBuffer.onlineUserTableModel.remove(user.getId());
         sendToAll(response);
 
-        return false;
+        return true;
     }
 
     // group chat and private chat
