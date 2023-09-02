@@ -1,36 +1,37 @@
 package server.entity;
 
 import entity.User;
-import server.DataBuffer;
-import util.IOUtil;
+import util.DatabaseUtil;
 
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
-import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
 import java.security.NoSuchAlgorithmException;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
-
-import static util.PasswordEncryption.hashPassword;
+import util.PasswordEncryption;
 
 public class UserService {
-    private static int idCount = 10003; //id
-
-    /** 新增用户 */
-    public void addUser(User user){
+    private static int idCount = 1; //用户数
+    private final String jdbcUrl = "jdbc:mysql://localhost:3306/test";
+    private final String username = "root";
+    private final String password = "12345678";
+    // 新增用户
+    public void addUser( User user) {
         user.setId(++idCount);
         List<User> users = loadAllUser();
         users.add(user);
         saveAllUser(users);
     }
 
-    /** 用户登录 */
+    //用户登录
     public User login(long id, String password) throws NoSuchAlgorithmException {
         User result = null;
+        password = PasswordEncryption.hashPassword(password);
         List<User> users = loadAllUser();
-        for (User user : users) {
-            if(id == user.getId() && hashPassword(password).equals(hashPassword(user.getPassword()))){
+        for(User user: users) {
+            if (id == user.getId() && password.equals(user.getPassword())) {
                 result = user;
                 break;
             }
@@ -38,72 +39,75 @@ public class UserService {
         return result;
     }
 
-    /** 根据ID加载用户 */
-    public User loadUser(long id){
+    //根据id加载用户
+    public User loadUser(long id) {
         User result = null;
         List<User> users = loadAllUser();
-        for (User user : users) {
-            if(id == user.getId()){
+        for (User user: users) {
+            if (id == user.getId()) {
                 result = user;
                 break;
             }
         }
-        return result;
+        return  result;
     }
 
-
-    /** 加载所有用户 */
-    @SuppressWarnings("unchecked")
+    //加载所有用户
     public List<User> loadAllUser() {
-        List<User> list = null;
-        ObjectInputStream ois = null;
+        List<User> users = new ArrayList<>();
         try {
-            ois = new ObjectInputStream(
-                    new FileInputStream(
-                            DataBuffer.configProp.getProperty("dbpath")));
+            DatabaseUtil databaseUtil = new DatabaseUtil(this.jdbcUrl, this.username, this.password);
+            Connection connection = databaseUtil.connect();
+            if (connection != null) {
+                String query = "Select * From users";
+                ResultSet resultSet = databaseUtil.executeQuery(query);
 
-            list = (List<User>)ois.readObject();
-        } catch (Exception e) {
+                while (resultSet.next()) {
+                    User user = new User("", "", "");
+                    user.setId(resultSet.getLong("id"));
+                    user.setNickName(resultSet.getString("nickName"));
+                    user.setPassword((resultSet.getString("password")));
+                    user.setSex(resultSet.getString("sex"));
+                    users.add(user);
+                }
+                databaseUtil.close();
+            }
+        }catch (Exception e) {
             e.printStackTrace();
-        }finally{
-            IOUtil.close(ois);
         }
-        return list;
+        return users;
     }
 
-    private void saveAllUser(List<User> users) {
-        ObjectOutputStream oos = null;
+    //写入数据库现有内存用户
+    public void saveAllUser(List<User> users) {
         try {
-            oos = new ObjectOutputStream(
-                    new FileOutputStream(
-                            DataBuffer.configProp.getProperty("dbpath")));
-            //写回用户信息
-            oos.writeObject(users);
-            oos.flush();
-        } catch (Exception e) {
+            DatabaseUtil databaseUtil = new DatabaseUtil(this.jdbcUrl, this.username, this.password);
+            Connection connection = databaseUtil.connect();
+            databaseUtil.testConnection();
+            if (connection != null) {
+                String query = "INSERT INTO users (nickName, password, sex) VALUES ('1', '1', '1');";
+                PreparedStatement preparedStatement = connection.prepareStatement(query);
+                for (User user: users) {
+                    preparedStatement.setString(1, user.getNickName());
+                    preparedStatement.setString(2, user.getPassword());
+                    preparedStatement.setString(3, user.getSex());
+                }
+
+                databaseUtil.close();
+            }
+
+        }catch (Exception e) {
             e.printStackTrace();
-        }finally{
-            IOUtil.close(oos);
         }
     }
 
-
-
-    /** 初始化几个测试用户 */
+    //初始化一个测试用户
     public void initUser() throws NoSuchAlgorithmException {
-        User user = new User("Hibari", "admin", "男");
-        user.setId(10000);
-
-        User user2 = new User("Xiaoyu", "admin","男");
-        user2.setId(10001);
-
-        User user3 = new User("Nina", "admin","女");
-        user3.setId(10002);
-
+        User user = new User("admin", "Admin", "m");
+        user.setId(1);
+        //System.out.println(user.getSex());
         List<User> users = new CopyOnWriteArrayList<User>();
         users.add(user);
-        users.add(user2);
-        users.add(user3);
 
         this.saveAllUser(users);
     }
@@ -111,7 +115,7 @@ public class UserService {
     public static void main(String[] args) throws NoSuchAlgorithmException {
         new UserService().initUser();
         List<User> users = new UserService().loadAllUser();
-        for (User user : users) {
+        for (User user: users) {
             System.out.println(user);
         }
     }

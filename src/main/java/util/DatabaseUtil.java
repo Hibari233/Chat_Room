@@ -1,18 +1,18 @@
 package util;
 
-import java.sql.Connection;
-import java.sql.DriverManager;
-import java.sql.ResultSet;
-import java.sql.Statement;
+import java.sql.*;
 
+import com.alibaba.fastjson2.*;
+
+import javax.swing.plaf.nimbus.State;
 
 public class DatabaseUtil {
-    String jdbcUrl = "jdbc:mysql://localhost:3306/mydatabase";
+    String jdbcUrl;
     String username;
     String password;
     Connection connection;
 
-    DatabaseUtil(String jdbcUrl, String username, String password) {
+    public DatabaseUtil(String jdbcUrl, String username, String password) {
         this.jdbcUrl = jdbcUrl;
         this.username = username;
         this.password = password;
@@ -46,6 +46,17 @@ public class DatabaseUtil {
             e.printStackTrace();
         }
         return null;
+    }
+
+    public void testConnection() throws SQLException {
+        Statement st = this.connection.createStatement();
+        ResultSet rs = st.executeQuery("SELECT * FROM users");
+        // print rs result
+        while (rs.next()) {
+            System.out.println(rs.getString("nickName"));
+        }
+
+
     }
 
 }

@@ -1,22 +1,22 @@
 package server;
 
-import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
+import java.io.*;
 
 public class OnlineClientIOcache {
-    private ObjectInputStream ois; // 对象输入流
-    private ObjectOutputStream oos; // 对象输出流
 
-    public OnlineClientIOcache(ObjectInputStream ois, ObjectOutputStream oos){
-        this.ois = ois;
-        this.oos = oos;
+    private BufferedReader inputStream;
+    private BufferedWriter outputStream;
+
+    public OnlineClientIOcache(BufferedReader inputStream, BufferedWriter outputStream){
+        this.inputStream = inputStream;
+        this.outputStream = outputStream;
     }
 
-    public ObjectOutputStream getOos(){
-        return oos;
+    public BufferedReader getInputStream(){
+        return inputStream;
     }
 
-    public ObjectInputStream getOis() {
-        return ois;
+    public BufferedWriter getOutputStream() {
+        return outputStream;
     }
 }

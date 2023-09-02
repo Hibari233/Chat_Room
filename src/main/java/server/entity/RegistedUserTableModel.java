@@ -3,7 +3,7 @@ package server.entity;
 import javax.swing.table.AbstractTableModel;
 import java.util.*;
 
-public class RegisterUserTableModel extends AbstractTableModel {
+public class RegistedUserTableModel extends AbstractTableModel {
     private String[] attribute ={"QQ号", "密码", "用户名", "性别"};
     private List<String[]> rows = new ArrayList<String[]>();
     @Override
