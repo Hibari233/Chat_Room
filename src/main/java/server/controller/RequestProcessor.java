@@ -1,11 +1,14 @@
 package server.controller;
 
 import java.io.*;
+import java.net.ServerSocket;
 import java.net.Socket;
 import java.security.NoSuchAlgorithmException;
+import java.util.Map;
 import java.util.concurrent.CopyOnWriteArrayList;
+import java.util.concurrent.Executor;
 
-import com.alibaba.fastjson2.JSON;
+import com.alibaba.fastjson.JSON;
 import entity.*;
 import server.DataBuffer;
 import server.OnlineClientIOcache;
@@ -15,46 +18,49 @@ import util.PasswordEncryption;
 
 import javax.xml.crypto.Data;
 
-public class RequestProcessor implements Runnable {
-    private Socket socket;
-    public RequestProcessor(Socket socket) {
-        this.socket = socket;
-    }
+public class RequestProcessor implements Runnable{
 
-    public void run() {
-        boolean quit_flag = false;
-        try {
-            BufferedReader reader = new BufferedReader(new InputStreamReader(socket.getInputStream()));
-            BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(socket.getOutputStream()));
-            while(!quit_flag) {
-                String request = reader.readLine();
-                Request req = JSON.parseObject(request, Request.class);
-                String action = req.getAction();
-                System.out.println("Server received Request action: " + action);
+    private final Socket client;
 
-                if(action.equals("userRegister")){
-                    register(reader, writer, req);
-                }
-                else if(action.equals("userLogin")){
-                    login(reader, writer, req);
-                }
-                else if(action.equals("exit")){
-                    quit_flag = logout(reader, writer, req);
-                }
-                else if(action.equals("chat")){
-                    chat(req);
-                }
-                else if(action.equals("shake")){
-
-                }
-                else{
-
-                }
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
+    public RequestProcessor(Socket client) {
+            this.client = client;
         }
-    }
+        @Override
+        public void run() {
+            boolean quit_flag = false;
+            try {
+
+                BufferedReader reader = new BufferedReader(new InputStreamReader(client.getInputStream()));
+                BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(client.getOutputStream()));
+                while(!quit_flag) {
+                    String request = reader.readLine();
+                    Request req = JSON.parseObject(request, Request.class);
+                    String action = req.getAction();
+                    System.out.println("Server received Request action: " + action);
+
+                    if(action.equals("userRegister")){
+                        register(reader, writer, req);
+                    }
+                    else if(action.equals("userLogin")){
+                        login(reader, writer, req);
+                    }
+                    else if(action.equals("exit")){
+                        quit_flag = logout(reader, writer, req);
+                    }
+                    else if(action.equals("chat")){
+                        chat(req);
+                    }
+                    else if(action.equals("shake")){
+
+                    }
+                    else{
+
+                    }
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
 
     // userRegister
 
@@ -63,7 +69,6 @@ public class RequestProcessor implements Runnable {
         User user = (User)request.getAttribute("user");
         UserController userController = new UserController();
         userController.addUser(user);
-
         // response
         Response response = new Response();
         response.setStatus(ResponseStatus.OK);
@@ -184,10 +189,8 @@ public class RequestProcessor implements Runnable {
             for (Long id : DataBuffer.onlineUserIOCacheMap.keySet()) {
                 if (msg.getFromUser().getId() == id) continue;
                 sendResponse(DataBuffer.onlineUserIOCacheMap.get(id), response);
-
             }
         }
-
     }
 
     private void sendResponse(OnlineClientIOcache onlineUserIO, Response response) throws IOException {
