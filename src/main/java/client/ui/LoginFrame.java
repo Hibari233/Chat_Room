@@ -128,16 +128,16 @@ public class LoginFrame extends JFrame {
 
         Request request = new Request();
         request.setAction("userLogin");
-        request.setAttribute("id", idTxt.getText());
-        request.setAttribute("password", new String(pwdFld.getPassword()));
+        request.setAttributeCustom("id", idTxt.getText());
+        request.setAttributeCustom("password", new String(pwdFld.getPassword()));
 
         //获取响应
         Response response = null;
-        try {
-            response = ClientUtil.sendTextRequest(request);
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
+//        try {
+//            response = ClientUtil.sendTextRequest(request);
+//        } catch (IOException e) {
+//            throw new RuntimeException(e);
+//        }
 
         if (response.getStatus() == ResponseStatus.OK) {
             // 获取当前用户

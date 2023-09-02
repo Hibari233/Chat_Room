@@ -1,19 +1,19 @@
 package client.ui;
 
+import client.DataBuffer;
 import client.util.ClientUtil;
-import entity.Request;
-import entity.Response;
-import entity.ResponseStatus;
-import entity.User;
-import server.DataBuffer;
+import com.alibaba.fastjson2.JSON;
+import entity.*;
 
 
 import javax.swing.*;
+import javax.xml.crypto.Data;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
-import java.io.IOException;
+import java.io.*;
+import java.net.Socket;
 import java.security.NoSuchAlgorithmException;
 
 public class RegisterFrame extends JFrame {
@@ -163,8 +163,7 @@ public class RegisterFrame extends JFrame {
     private void registe (User user) throws IOException {
         Request request = new Request();
         request.setAction("userRegister");
-        request.setAttribute("user", user);
-
+        request.setAttributeCustom("user", user);
         //响应
         Response response = ClientUtil.sendTextRequest(request);
         ResponseStatus responseStatus = response.getStatus();

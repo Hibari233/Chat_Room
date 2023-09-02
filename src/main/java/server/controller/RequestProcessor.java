@@ -27,7 +27,9 @@ public class RequestProcessor implements Runnable {
             BufferedReader reader = new BufferedReader(new InputStreamReader(socket.getInputStream()));
             BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(socket.getOutputStream()));
             while(!quit_flag) {
+                System.out.println("输入流："+reader);
                 String request = reader.readLine();
+                System.out.println("服务器接受到消息："+request);
                 Request req = JSON.parseObject(request, Request.class);
                 String action = req.getAction();
                 System.out.println("Server received Request action: " + action);
@@ -58,9 +60,10 @@ public class RequestProcessor implements Runnable {
 
     // userRegister
 
-    public void register(BufferedReader inputStream, BufferedWriter outputStream, Request request) throws IOException {
+    public void register(BufferedReader inputStream, BufferedWriter outputStream, Request request) throws IOException, NoSuchAlgorithmException {
         // process
-        User user = (User)request.getAttribute("user");
+        User user = new User("test", "test", "test");
+
         UserController userController = new UserController();
         userController.addUser(user);
 
@@ -77,8 +80,8 @@ public class RequestProcessor implements Runnable {
 
     public void login(BufferedReader inputStream, BufferedWriter outputStream, Request request) throws IOException, NoSuchAlgorithmException {
         // process basic information
-        String id = (String)request.getAttribute("id");
-        String password = (String)request.getAttribute("password");
+        String id = (String)request.getAttributeCustom("id");
+        String password = (String)request.getAttributeCustom("password");
 
         // use UserService to login
         UserController userController = new UserController();
@@ -142,7 +145,7 @@ public class RequestProcessor implements Runnable {
     // client exit
     public boolean logout(BufferedReader inputStream, BufferedWriter outputStream, Request request) throws IOException {
         // print leave message on server side
-        User user = (User)request.getAttribute("user");
+        User user = (User)request.getAttributeCustom("user");
         System.out.println("User " + user.getNickName() + " has left the chat room.");
 
         // remove user from online user list
@@ -166,7 +169,7 @@ public class RequestProcessor implements Runnable {
 
     // group chat and private chat
     public void chat(Request request) throws IOException {
-        Message msg = (Message) request.getAttribute("msg");
+        Message msg = (Message) request.getAttributeCustom("msg");
 
         // response
         Response response = new Response();

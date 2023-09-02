@@ -2,7 +2,6 @@ package entity;
 
 import java.util.HashMap;
 import java.util.Map;
-import com.alibaba.fastjson2.*;
 
 public class Request {
     private String action;
@@ -31,15 +30,15 @@ public class Request {
 
     public void setAction(String action) {this.action = action;}
 
-    public Map<String, Object> getAttributesMap() {
+    public Map<String, Object> getAttributeMap() {
         return attributesMap;
     }
+    public Object getAttributeCustom(String name) {
 
-    public Object getAttribute(String name) {
         return this.attributesMap.get(name);
     }
 
-    public void setAttribute(String name, Object value) {
+    public void setAttributeCustom(String name, Object value) {
         this.attributesMap.put(name, value);
     }
 

@@ -26,7 +26,7 @@ public class Response {
     public void setType(ResponseType type) {
         this.type = type;
     }
-    public ResponseStatus getStatus() { return status; }
+    public ResponseStatus getStatus() { return this.status; }
     public void setStatus(ResponseStatus status) { this.status = status; }
     public Map<String, Object> getDataMap() { return datamap; }
     public void setDataMap(Map<String, Object> datamap) { this.datamap = datamap; }

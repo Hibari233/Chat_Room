@@ -16,11 +16,7 @@ public class DataBuffer {
     // onlineUserTable list
     public static List<User> onlineUsers;
     // socket from client to server
-    public static Socket clientSocket;
-    //输出流
-    public static BufferedReader inputStream;
-    //输出流
-    public static BufferedWriter outputStream;
+    public static Socket socket;
     // 服务器配置参数属性集
     public static Properties configProp;
     // 当前客户端的屏幕尺寸
@@ -45,6 +41,4 @@ public class DataBuffer {
             e.printStackTrace();
         }
     }
-
-    private DataBuffer(){}
 }

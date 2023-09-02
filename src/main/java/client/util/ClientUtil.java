@@ -11,20 +11,22 @@ public class ClientUtil {
     public static Response sendTextRequest(Request request) throws IOException {
         Response response = null;
         try {
-            DataBuffer.outputStream.write(JSON.toJSONString(request));
-            DataBuffer.outputStream.flush();
-            System.out.println("客户端发送了请求对象:" + request.getAction());
-
-            if (!"exit".equals(request.getAction())) {
-                // 获取响应
-                String rep = DataBuffer.inputStream.readLine();
-                response = JSON.parseObject(rep, Response.class);
-                System.out.println("客户端获取到了响应对象:" + response.getStatus());
-            }else {
-                System.out.println("客户端断开连接了");
-            }
+            BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(DataBuffer.socket.getOutputStream()));
+            writer.write(JSON.toJSONString(request));
+            writer.flush();
+            System.out.println("客户端发送了请求对象:" + request.getAction()  + request.getAttributeCustom("user"));
         } catch (IOException e) {
             throw e;
+        }
+
+        if (!"exit".equals(request.getAction())) {
+            // 获取响应
+            BufferedReader reader = new BufferedReader(new InputStreamReader(DataBuffer.socket.getInputStream()));
+            String rep = reader.readLine();
+            response = JSON.parseObject(rep, Response.class);
+            System.out.println("客户端获取到了响应对象:" + response.getStatus());
+        }else {
+            System.out.println("客户端断开连接了");
         }
         return response;
     }
