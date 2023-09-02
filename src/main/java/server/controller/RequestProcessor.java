@@ -144,10 +144,24 @@ public class RequestProcessor implements Runnable {
         User user = (User)request.getAttribute("user");
         System.out.println("User " + user.getNickName() + " has left the chat room.");
 
+        // remove user from online user list
+        DataBuffer.onlineUsersMap.remove(user.getId());
+        // remove user from online user IO cache Map
+        DataBuffer.onlineUserIOCacheMap.remove(user.getId());
 
-        // TODO: 用户退出
+        // response
+        Response response = new Response();
+        response.setStatus(ResponseStatus.OK);
+        response.setData("logoutUser", user);
+        outputStream.write(JSON.toJSONString(response));
+        outputStream.flush();
+
+        // remove user from online user table model
+        DataBuffer.onlineUserTableModel.remove(user.getId());
+        sendToAll(response);
+
+        return false;
     }
-
 
     // send to all online clients
     private void sendToAll(Response response) throws IOException {
