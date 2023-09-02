@@ -27,7 +27,7 @@ public class RequestProcessor implements Runnable {
             BufferedReader reader = new BufferedReader(new InputStreamReader(socket.getInputStream()));
             BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(socket.getOutputStream()));
             while(!quit_flag) {
-                String request = reader.readLine();
+                String request = String.valueOf(reader.read());
                 Request req = JSON.parseObject(request, Request.class);
                 String action = req.getAction();
                 System.out.println("Server received Request action: " + action);

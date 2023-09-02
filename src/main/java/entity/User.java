@@ -14,6 +14,12 @@ public class User {
         this.nickName = nickName;
         this.password = hashPassword(password);
         this.sex=sex;
+        if(nickName.equals("")||nickName==null)
+        {
+            this.nickName = "未命名";
+        }else{
+            this.nickName = nickName;
+        }
     }
 
     public User(String nickName, String password) throws NoSuchAlgorithmException {
