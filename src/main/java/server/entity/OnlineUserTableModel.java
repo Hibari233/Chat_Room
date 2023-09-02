@@ -41,4 +41,15 @@ public class OnlineUserTableModel extends AbstractTableModel {
         fireTableRowsDeleted(rowIndex, rowIndex);
     }
 
+    public void remove(long id) {
+        int rowIndex = Integer.parseInt(null);
+        for(int i = 0; i < rows.size(); i++) {
+            if (String.valueOf(id).equals(getValueAt(i, 0))) {
+                rowIndex = i;
+                break;
+            }
+        }
+        rows.remove(rowIndex);
+        fireTableRowsDeleted(rowIndex, rowIndex);
+    }
 }
