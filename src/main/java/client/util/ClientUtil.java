@@ -17,7 +17,7 @@ public class ClientUtil {
 
             if (!"exit".equals(request.getAction())) {
                 // 获取响应
-                String rep = String.valueOf(DataBuffer.inputStream.read());
+                String rep = DataBuffer.inputStream.readLine();
                 response = JSON.parseObject(rep, Response.class);
                 System.out.println("客户端获取到了响应对象:" + response.getStatus());
             }else {
@@ -28,16 +28,4 @@ public class ClientUtil {
         }
         return response;
     }
-
-    // 发送请求对象，不主动接受响应
-    public static void sendTextRequest2(Request request) throws IOException {
-        try {
-            DataBuffer.outputStream.write(JSON.toJSONString(request));
-            DataBuffer.outputStream.flush();
-            System.out.println("客户端发送了请求对象:" + request.getAction());
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-    }
-
 }

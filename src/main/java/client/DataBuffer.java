@@ -33,7 +33,7 @@ public class DataBuffer {
     public static OnlineUserListModel onlineUserListModel;
 
     static{
-        // screenSize = Toolkit.getDefaultToolkit().getScreenSize();
+        screenSize = Toolkit.getDefaultToolkit().getScreenSize();
         //加载服务器配置文件
         configProp = new Properties();
         try {
