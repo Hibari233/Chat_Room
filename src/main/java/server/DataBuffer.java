@@ -34,9 +34,9 @@ public class DataBuffer {
         onlineUserIOCacheMap = new ConcurrentSkipListMap<Long,OnlineClientIOcache>();
         onlineUsersMap = new ConcurrentSkipListMap<Long, User>();
         configProp = new Properties();
-//        registedUserTableModel = new RegistedUserTableModel();
-//        onlineUserTableModel = new OnlineUserTableModel();
-        screenSize = Toolkit.getDefaultToolkit().getScreenSize();
+        registedUserTableModel = new RegistedUserTableModel();
+        onlineUserTableModel = new OnlineUserTableModel();
+        //screenSize = Toolkit.getDefaultToolkit().getScreenSize();
         // 加载服务器配置文件
         try {
             configProp.load(Thread.currentThread()

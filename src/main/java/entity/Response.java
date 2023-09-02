@@ -35,7 +35,7 @@ public class Response {
     public void setData(String name, Object value) {
         this.datamap.put(name, value);
     }
-    public void getData(String name) { this.datamap.get(name); }
+    public Object getData(String name) { return this.datamap.get(name); }
     public void removeData(String name) {this.datamap.remove(name); }
     public void clearData() { this.datamap.clear(); }
 }
