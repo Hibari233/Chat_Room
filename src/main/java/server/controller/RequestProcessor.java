@@ -9,6 +9,7 @@ import com.alibaba.fastjson2.JSON;
 import entity.*;
 import server.DataBuffer;
 import server.OnlineClientIOcache;
+import entity.Request;
 import server.controller.UserController;
 import util.DatabaseUtil;
 import util.PasswordEncryption;
@@ -60,9 +61,9 @@ public class RequestProcessor implements Runnable {
 
     // userRegister
 
-    public void register(BufferedReader inputStream, BufferedWriter outputStream, Request request) throws IOException, NoSuchAlgorithmException {
+    public void register(BufferedReader inputStream, BufferedWriter outputStream, Request request) throws IOException {
         // process
-        User user = new User("test", "test", "test");
+        User user = (User)request.getAttributeCustom("user");
 
         UserController userController = new UserController();
         userController.addUser(user);
