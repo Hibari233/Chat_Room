@@ -9,7 +9,7 @@ import com.alibaba.fastjson2.JSON;
 import entity.*;
 import server.DataBuffer;
 import server.OnlineClientIOcache;
-import server.entity.UserService;
+import server.controller.UserController;
 import util.DatabaseUtil;
 import util.PasswordEncryption;
 
@@ -59,8 +59,8 @@ public class RequestProcessor implements Runnable {
     public void register(BufferedReader inputStream, BufferedWriter outputStream, Request request) throws IOException {
         // process
         User user = (User)request.getAttribute("user");
-        UserService userService = new UserService();
-        userService.addUser(user);
+        UserController userController = new UserController();
+        userController.addUser(user);
 
         // response
         Response response = new Response();
@@ -80,8 +80,8 @@ public class RequestProcessor implements Runnable {
         String password_encrypted = PasswordEncryption.hashPassword(password);
 
         // use UserService to login
-        UserService userService = new UserService();
-        User user = userService.login(Long.parseLong(id), password_encrypted);
+        UserController userController = new UserController();
+        User user = userController.login(Long.parseLong(id), password_encrypted);
 
         // response
 
@@ -136,6 +136,16 @@ public class RequestProcessor implements Runnable {
             outputStream.flush();
         }
 
+    }
+
+    // client exit
+    public boolean logout(BufferedReader inputStream, BufferedWriter outputStream, Request request) throws IOException {
+        // print leave message on server side
+        User user = (User)request.getAttribute("user");
+        System.out.println("User " + user.getNickName() + " has left the chat room.");
+
+
+        // TODO: 用户退出
     }
 
 
