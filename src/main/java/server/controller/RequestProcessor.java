@@ -13,6 +13,8 @@ import server.controller.UserController;
 import util.DatabaseUtil;
 import util.PasswordEncryption;
 
+import javax.xml.crypto.Data;
+
 public class RequestProcessor implements Runnable {
     private Socket socket;
     public RequestProcessor(Socket socket) {
@@ -162,6 +164,39 @@ public class RequestProcessor implements Runnable {
 
         return false;
     }
+
+    // group chat and private chat
+    public void chat(Request request) throws IOException {
+        Message msg = (Message) request.getAttribute("msg");
+
+        // response
+        Response response = new Response();
+        response.setStatus(ResponseStatus.OK);
+        response.setType(ResponseType.CHAT);
+        response.setData("txtMsg", msg);
+
+        // getToUser == null -> groupChat
+        // getToUser != null -> privateChat
+        if(msg.getToUser() != null) {
+            OnlineClientIOcache toUserIO = DataBuffer.onlineUserIOCacheMap.get(msg.getToUser().getId());
+            sendResponse(toUserIO, response);
+        }
+        else {
+            for (Long id : DataBuffer.onlineUserIOCacheMap.keySet()) {
+                if (msg.getFromUser().getId() == id) continue;
+                sendResponse(DataBuffer.onlineUserIOCacheMap.get(id), response);
+
+            }
+        }
+
+    }
+
+    private void sendResponse(OnlineClientIOcache onlineUserIO, Response response) throws IOException {
+        BufferedWriter writer = onlineUserIO.getOutputStream();
+        writer.write(JSON.toJSONString(response));
+        writer.flush();
+    }
+
 
     // send to all online clients
     private void sendToAll(Response response) throws IOException {
