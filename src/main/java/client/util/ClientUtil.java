@@ -12,7 +12,7 @@ public class ClientUtil {
         Response response = null;
         try {
             BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(DataBuffer.socket.getOutputStream()));
-            writer.write(JSON.toJSONString(request));
+            writer.write(JSON.toJSONString(request) + "\n");
             writer.flush();
             System.out.println("客户端发送了请求对象:" + request.getAction()  + request.getAttributeCustom("user"));
         } catch (IOException e) {

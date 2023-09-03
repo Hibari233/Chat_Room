@@ -141,16 +141,16 @@ public class LoginFrame extends JFrame {
 
         if (response.getStatus() == ResponseStatus.OK) {
             // 获取当前用户
-            User user = (User) response.getData("user");
+            User user = (User) response.getDataCustom("user");
             if (user != null) { //登录成功
 
                 DataBuffer.currentUser = user;
                 // 获取当前在线用户列表
-                DataBuffer.onlineUsers = (List<User>) response.getData("onlineUsersMap");
+                DataBuffer.onlineUsers = (List<User>) response.getDataCustom("onlineUsersMap");
                 LoginFrame.this.dispose();
                 //new ChatFrame();
             }else {//登录失败
-                String str = (String) response.getData("msg");
+                String str = (String) response.getDataCustom("msg");
                 JOptionPane.showMessageDialog(LoginFrame.this, str, "登录失败", JOptionPane.ERROR_MESSAGE);
             }
         }else {

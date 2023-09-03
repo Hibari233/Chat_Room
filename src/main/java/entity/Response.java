@@ -28,14 +28,14 @@ public class Response {
     }
     public ResponseStatus getStatus() { return this.status; }
     public void setStatus(ResponseStatus status) { this.status = status; }
-    public Map<String, Object> getDataMap() { return datamap; }
+    public Map<String, Object> getDataCustomCustomMap() { return datamap; }
     public void setDataMap(Map<String, Object> datamap) { this.datamap = datamap; }
     public OutputStream getOutputStream() { return outputStream; }
     public void setOutputStream(OutputStream outputStream) { this.outputStream = outputStream; }
-    public void setData(String name, Object value) {
+    public void setDataCustom(String name, Object value) {
         this.datamap.put(name, value);
     }
-    public Object getData(String name) { return this.datamap.get(name); }
+    public Object getDataCustom(String name) { return this.datamap.get(name); }
     public void removeData(String name) {this.datamap.remove(name); }
     public void clearData() { this.datamap.clear(); }
 }

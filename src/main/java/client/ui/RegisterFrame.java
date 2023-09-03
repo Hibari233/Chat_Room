@@ -3,6 +3,7 @@ package client.ui;
 import client.DataBuffer;
 import client.util.ClientUtil;
 import com.alibaba.fastjson2.JSON;
+import com.alibaba.fastjson2.JSONObject;
 import entity.*;
 
 
@@ -151,7 +152,7 @@ public class RegisterFrame extends JFrame {
                     }
                     try {
                         RegisterFrame.this.registe(user);
-                    } catch (IOException e1) {
+                    } catch (IOException | NoSuchAlgorithmException e1) {
                         e1.printStackTrace();
                     }
                 }
@@ -160,7 +161,7 @@ public class RegisterFrame extends JFrame {
     }
 
     //注册
-    private void registe (User user) throws IOException {
+    private void registe (User user) throws IOException, NoSuchAlgorithmException {
         Request request = new Request();
         request.setAction("userRegister");
         request.setAttributeCustom("user", user);
@@ -169,7 +170,9 @@ public class RegisterFrame extends JFrame {
         ResponseStatus responseStatus = response.getStatus();
         switch (responseStatus) {
             case OK:
-                User user1 = (User) response.getData("user");
+                JSONObject data = (JSONObject) response.getDataCustom("user");
+                User user1 = new User(data.getString("nickName"), data.getString("password"), data.getString("sex"));
+                user1.setId(data.getLong("id"));
                 JOptionPane.showMessageDialog(RegisterFrame.this,
                         "QQ号:"+ user1.getId() ,
                         "注册成功",JOptionPane.INFORMATION_MESSAGE);
