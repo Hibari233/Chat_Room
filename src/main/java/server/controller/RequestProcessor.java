@@ -64,12 +64,10 @@ public class RequestProcessor implements Runnable {
 
     // userRegister
 
-    public void register(BufferedReader inputStream, BufferedWriter outputStream, Request request) throws IOException {
+    public void register(BufferedReader inputStream, BufferedWriter outputStream, Request request) throws IOException, NoSuchAlgorithmException {
         // process
-
         JSONObject data = (JSONObject) request.getAttributeCustom("user");
-        User user = (User)request.getAttributeCustom("user");
-
+        User user = new User(data.getString("nickName"), data.getString("password"), data.getString("sex"));
 
         UserController userController = new UserController();
         userController.addUser(user);
@@ -90,9 +88,8 @@ public class RequestProcessor implements Runnable {
 
     public void login(BufferedReader inputStream, BufferedWriter outputStream, Request request) throws IOException, NoSuchAlgorithmException {
         // process basic information
-        JSONObject data = (JSONObject) request.getAttributeCustom("user");
-        long id = data.getLong("id");
-        String password = data.getString("password");
+        long id = Long.parseLong((String) request.getAttributeCustom("id"));
+        String password = (String) request.getAttributeCustom("password");
 
         // use UserService to login
         UserController userController = new UserController();
@@ -111,7 +108,7 @@ public class RequestProcessor implements Runnable {
                 // response
                 response.setStatus(ResponseStatus.OK);
                 response.setDataCustom("message", "user has already logged in");
-                outputStream.write(JSON.toJSONString(response));
+                outputStream.write(JSON.toJSONString(response) + '\n');
                 outputStream.flush();
             }
             else {
@@ -125,7 +122,7 @@ public class RequestProcessor implements Runnable {
                 // response
                 response.setStatus(ResponseStatus.OK);
                 response.setDataCustom("user", user);
-                outputStream.write(JSON.toJSONString(response));
+                outputStream.write(JSON.toJSONString(response) + '\n');
                 outputStream.flush();
 
                 // response to other client (notify other client user login)
@@ -147,7 +144,7 @@ public class RequestProcessor implements Runnable {
             response.setStatus(ResponseStatus.OK);
             response.setDataCustom("msg", "账号或密码不正确！");
             // response
-            outputStream.write(JSON.toJSONString(response));
+            outputStream.write(JSON.toJSONString(response) + '\n');
             outputStream.flush();
         }
 
@@ -172,7 +169,7 @@ public class RequestProcessor implements Runnable {
         Response response = new Response();
         response.setStatus(ResponseStatus.OK);
         response.setDataCustom("logoutUser", user);
-        outputStream.write(JSON.toJSONString(response));
+        outputStream.write(JSON.toJSONString(response) + '\n');
         outputStream.flush();
 
         // remove user from online user table model
@@ -184,9 +181,7 @@ public class RequestProcessor implements Runnable {
 
     // group chat and private chat
     public void chat(Request request) throws IOException {
-        JSONObject dataMsg = (JSONObject) request.getAttributeCustom("msg");
-
-
+        Message msg = (Message) request.getAttributeCustom("msg");
         // response
         Response response = new Response();
         response.setStatus(ResponseStatus.OK);

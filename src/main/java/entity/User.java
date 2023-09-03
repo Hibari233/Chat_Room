@@ -12,7 +12,7 @@ public class User {
 
     public User(String nickName, String password ,String sex) throws NoSuchAlgorithmException {
         this.nickName = nickName;
-        this.password = hashPassword(password);
+        this.password = password;
         this.sex=sex;
         if(nickName.equals("")||nickName==null)
         {
@@ -20,11 +20,6 @@ public class User {
         }else{
             this.nickName = nickName;
         }
-    }
-
-    public User(String nickName, String password) throws NoSuchAlgorithmException {
-        this.nickName = nickName;
-        this.password = hashPassword(password);
     }
 
 
@@ -38,13 +33,13 @@ public class User {
     public String getNickName() {return this.nickName;}
 
     public Boolean checkPassword(String password) throws NoSuchAlgorithmException {
-        return this.password.equals(hashPassword(password));
+        return this.password.equals(password);
     }
 
     public String getPassword() {return this.password;}
 
     public void setPassword(String password) throws NoSuchAlgorithmException {
-        this.password = hashPassword(password);
+        this.password = password;
     }
 
     public void setSex(String sex) {this.sex = sex;}

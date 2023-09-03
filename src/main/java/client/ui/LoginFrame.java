@@ -2,6 +2,7 @@ package client.ui;
 
 
 import client.DataBuffer;
+import com.alibaba.fastjson2.JSONObject;
 import entity.Request;
 import entity.Response;
 import client.util.ClientUtil;
@@ -19,6 +20,7 @@ import java.awt.event.ActionListener;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.io.IOException;
+import java.security.NoSuchAlgorithmException;
 import java.util.List;
 
 public class LoginFrame extends JFrame {
@@ -103,13 +105,17 @@ public class LoginFrame extends JFrame {
         //"登录"
         submitBtn.addActionListener(new ActionListener(){
             public void actionPerformed(ActionEvent e) {
-                login();
+                try {
+                    login();
+                } catch (NoSuchAlgorithmException ex) {
+                    throw new RuntimeException(ex);
+                }
             }
         });
     }
 
     // 登录
-    private void login() {
+    private void login() throws NoSuchAlgorithmException {
         if (idTxt.getText().isEmpty() || pwdFld.getPassword().length == 0) {
             JOptionPane.showMessageDialog(LoginFrame.this,
                     "账号和密码是必填的",
@@ -141,9 +147,11 @@ public class LoginFrame extends JFrame {
 
         if (response.getStatus() == ResponseStatus.OK) {
             // 获取当前用户
-            User user = (User) response.getDataCustom("user");
+            JSONObject data = (JSONObject) response.getDataCustom("user");
+            User user = null;
+            if(data != null) {user = new User(data.getString("nickName"), data.getString("password"), data.getString("sex"));}
+            else user = null;
             if (user != null) { //登录成功
-
                 DataBuffer.currentUser = user;
                 // 获取当前在线用户列表
                 DataBuffer.onlineUsers = (List<User>) response.getDataCustom("onlineUsersMap");

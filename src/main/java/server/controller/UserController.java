@@ -16,9 +16,9 @@ public class UserController {
 
     private static long idCount = 1; //用户数
 
-    private final String jdbcUrl = "jdbc:mysql://localhost:3306/chatroom";
+    private final String jdbcUrl = "jdbc:mysql://localhost:3306/test";
     private final String username = "root";
-    private final String password = "password"; //修改为MySQL密码
+    private final String password = "12345678"; //修改为MySQL密码
     // 新增用户
     public void addUser( User user) {
         //user.setId(++idCount);
@@ -32,7 +32,9 @@ public class UserController {
         User result = null;
         List<User> users = loadAllUser();
         for(User user: users) {
+            String test = hashPassword(password);
             if (id == user.getId() && hashPassword(password).equals(user.getPassword())) {
+
                 result = user;
                 break;
             }
@@ -64,11 +66,8 @@ public class UserController {
                 ResultSet resultSet = databaseUtil.executeQuery(query);
 
                 while (resultSet.next()) {
-                    User user = new User("", "", "");
+                    User user = new User(resultSet.getString("nickName"), resultSet.getString("password"), resultSet.getString("sex"));
                     user.setId(resultSet.getLong("id"));
-                    user.setNickName(resultSet.getString("nickName"));
-                    user.setPassword((resultSet.getString("password")));
-                    user.setSex(resultSet.getString("sex"));
                     users.add(user);
                 }
                 databaseUtil.close();
@@ -89,7 +88,7 @@ public class UserController {
                 PreparedStatement preparedStatement = connection.prepareStatement(query);
                 for (User user: users) {
                     preparedStatement.setString(1, user.getNickName());
-                    preparedStatement.setString(2, user.getPassword());
+                    preparedStatement.setString(2, hashPassword(user.getPassword()));
                     preparedStatement.setString(3, user.getSex());
 
                     preparedStatement.executeUpdate();
