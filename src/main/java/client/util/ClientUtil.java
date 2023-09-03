@@ -1,6 +1,7 @@
 package client.util;
 
 import client.DataBuffer;
+import client.ui.ChatFrame;
 import com.alibaba.fastjson2.JSON;
 import entity.Request;
 import entity.Response;
@@ -30,4 +31,22 @@ public class ClientUtil {
         }
         return response;
     }
+    public static void sendTextRequest2(Request request) throws IOException {
+        try {
+            BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(DataBuffer.socket.getOutputStream()));
+            writer.write(JSON.toJSONString(request) + "\n");
+            writer.flush();
+            System.out.println("客户端发送了请求对象:" + request.getAction()  + request.getAttributeCustom("user"));
+        } catch (IOException e) {
+            throw e;
+        }
+    }
+    public static void appendTxt2MsgListArea(String txt) {
+        ChatFrame.msgListArea.append(txt);
+        //把光标定位到文本域的最后一行
+        ChatFrame.msgListArea.setCaretPosition(ChatFrame.msgListArea.getDocument().getLength());
+    }
 }
+
+
+

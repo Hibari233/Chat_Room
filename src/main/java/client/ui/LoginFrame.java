@@ -133,11 +133,11 @@ public class LoginFrame extends JFrame {
 
         //获取响应
         Response response = null;
-//        try {
-//            response = ClientUtil.sendTextRequest(request);
-//        } catch (IOException e) {
-//            throw new RuntimeException(e);
-//        }
+        try {
+            response = ClientUtil.sendTextRequest(request);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
 
         if (response.getStatus() == ResponseStatus.OK) {
             // 获取当前用户
@@ -148,7 +148,7 @@ public class LoginFrame extends JFrame {
                 // 获取当前在线用户列表
                 DataBuffer.onlineUsers = (List<User>) response.getDataCustom("onlineUsersMap");
                 LoginFrame.this.dispose();
-                //new ChatFrame();
+                new ChatFrame();
             }else {//登录失败
                 String str = (String) response.getDataCustom("msg");
                 JOptionPane.showMessageDialog(LoginFrame.this, str, "登录失败", JOptionPane.ERROR_MESSAGE);
