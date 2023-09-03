@@ -13,7 +13,9 @@ import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
 
 public class UserController {
+
     private static long idCount = 1; //用户数
+
     private final String jdbcUrl = "jdbc:mysql://localhost:3306/chatroom";
     private final String username = "root";
     private final String password = "password"; //修改为MySQL密码
@@ -21,7 +23,6 @@ public class UserController {
     public void addUser( User user) {
         //user.setId(++idCount);
         List<User> users = new ArrayList<User>();
-
         users.add(user);
         saveAllUser(users);
     }
