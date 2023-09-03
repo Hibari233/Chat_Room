@@ -11,6 +11,7 @@ import com.alibaba.fastjson2.JSONObject;
 import entity.*;
 import server.DataBuffer;
 import server.OnlineClientIOcache;
+import entity.Request;
 import server.controller.UserController;
 import util.DatabaseUtil;
 import util.PasswordEncryption;
@@ -62,10 +63,12 @@ public class RequestProcessor implements Runnable {
 
     // userRegister
 
-    public void register(BufferedReader inputStream, BufferedWriter outputStream, Request request) throws IOException, NoSuchAlgorithmException {
+    public void register(BufferedReader inputStream, BufferedWriter outputStream, Request request) throws IOException {
         // process
+
         JSONObject data = (JSONObject) request.getAttributeCustom("user");
-        User user = new User(data.getString("nickName"), data.getString("password"), data.getString("sex"));
+        User user = (User)request.getAttributeCustom("user");
+
 
         UserController userController = new UserController();
         userController.addUser(user);
