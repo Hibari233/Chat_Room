@@ -22,6 +22,6 @@ public class MainClient {
         } catch (Exception e) {
             e.printStackTrace();
         }
-        new RegisterFrame();
+        new LoginFrame();
     }
 }

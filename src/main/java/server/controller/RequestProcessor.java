@@ -3,6 +3,7 @@ package server.controller;
 import java.io.*;
 import java.net.Socket;
 import java.security.NoSuchAlgorithmException;
+import java.util.Date;
 import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
 
@@ -86,12 +87,13 @@ public class RequestProcessor implements Runnable {
 
     public void login(BufferedReader inputStream, BufferedWriter outputStream, Request request) throws IOException, NoSuchAlgorithmException {
         // process basic information
-        String id = (String)request.getAttributeCustom("id");
-        String password = (String)request.getAttributeCustom("password");
+        JSONObject data = (JSONObject) request.getAttributeCustom("user");
+        long id = data.getLong("id");
+        String password = data.getString("password");
 
         // use UserService to login
         UserController userController = new UserController();
-        User user = userController.login(Long.parseLong(id), password);
+        User user = userController.login(id, password);
 
         // response
 
@@ -149,9 +151,13 @@ public class RequestProcessor implements Runnable {
     }
 
     // client exit
-    public boolean logout(BufferedReader inputStream, BufferedWriter outputStream, Request request) throws IOException {
+    public boolean logout(BufferedReader inputStream, BufferedWriter outputStream, Request request) throws IOException, NoSuchAlgorithmException {
         // print leave message on server side
-        User user = (User)request.getAttributeCustom("user");
+        JSONObject data = (JSONObject) request.getAttributeCustom("user");
+        User user = new User(data.getString("nickName"), data.getString("password"), data.getString("sex"));
+        UserController userController = new UserController();
+        List<User> users = userController.loadAllUser();
+        user.setId(users.size());
         System.out.println("User " + user.getNickName() + " has left the chat room.");
 
         // remove user from online user list
@@ -175,7 +181,8 @@ public class RequestProcessor implements Runnable {
 
     // group chat and private chat
     public void chat(Request request) throws IOException {
-        Message msg = (Message) request.getAttributeCustom("msg");
+        JSONObject dataMsg = (JSONObject) request.getAttributeCustom("msg");
+
 
         // response
         Response response = new Response();
@@ -201,7 +208,7 @@ public class RequestProcessor implements Runnable {
 
     private void sendResponse(OnlineClientIOcache onlineUserIO, Response response) throws IOException {
         BufferedWriter writer = onlineUserIO.getOutputStream();
-        writer.write(JSON.toJSONString(response));
+        writer.write(JSON.toJSONString(response) + "\n");
         writer.flush();
     }
 
@@ -210,7 +217,7 @@ public class RequestProcessor implements Runnable {
     private void sendToAll(Response response) throws IOException {
         for(OnlineClientIOcache onlineUserIO : DataBuffer.onlineUserIOCacheMap.values()) {
             BufferedWriter writer = onlineUserIO.getOutputStream();
-            writer.write(JSON.toJSONString(response));
+            writer.write(JSON.toJSONString(response) + "\n");
             writer.flush();
         }
     }
