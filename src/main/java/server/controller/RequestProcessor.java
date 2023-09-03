@@ -3,9 +3,11 @@ package server.controller;
 import java.io.*;
 import java.net.Socket;
 import java.security.NoSuchAlgorithmException;
+import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
 
 import com.alibaba.fastjson2.JSON;
+import com.alibaba.fastjson2.JSONObject;
 import entity.*;
 import server.DataBuffer;
 import server.OnlineClientIOcache;
@@ -63,16 +65,22 @@ public class RequestProcessor implements Runnable {
 
     public void register(BufferedReader inputStream, BufferedWriter outputStream, Request request) throws IOException {
         // process
+
+        JSONObject data = (JSONObject) request.getAttributeCustom("user");
         User user = (User)request.getAttributeCustom("user");
+
 
         UserController userController = new UserController();
         userController.addUser(user);
+        List<User> users = userController.loadAllUser();
+        user.setId(users.size());
+        System.out.println(user.getId());
 
         // response
         Response response = new Response();
         response.setStatus(ResponseStatus.OK);
-        response.setData("user", user);
-        outputStream.write(JSON.toJSONString(response));
+        response.setDataCustom("user", user);
+        outputStream.write(JSON.toJSONString(response) + "\n");
         outputStream.flush();
 
         // add user into registed user list
@@ -100,7 +108,7 @@ public class RequestProcessor implements Runnable {
 
                 // response
                 response.setStatus(ResponseStatus.OK);
-                response.setData("message", "user has already logged in");
+                response.setDataCustom("message", "user has already logged in");
                 outputStream.write(JSON.toJSONString(response));
                 outputStream.flush();
             }
@@ -110,18 +118,18 @@ public class RequestProcessor implements Runnable {
                 DataBuffer.onlineUsersMap.put(user.getId(), user);
 
                 // add online user list into the response
-                response.setData("onlineUsersMap", new CopyOnWriteArrayList<User>(DataBuffer.onlineUsersMap.values()));
+                response.setDataCustom("onlineUsersMap", new CopyOnWriteArrayList<User>(DataBuffer.onlineUsersMap.values()));
 
                 // response
                 response.setStatus(ResponseStatus.OK);
-                response.setData("user", user);
+                response.setDataCustom("user", user);
                 outputStream.write(JSON.toJSONString(response));
                 outputStream.flush();
 
                 // response to other client (notify other client user login)
                 Response response_to_all = new Response();
                 response_to_all.setType(ResponseType.LOGIN);
-                response_to_all.setData("loginUser", user);
+                response_to_all.setDataCustom("loginUser", user);
                 sendToAll(response_to_all);
 
                 // put user into online user io cache
@@ -135,7 +143,7 @@ public class RequestProcessor implements Runnable {
         else {
             // login failed
             response.setStatus(ResponseStatus.OK);
-            response.setData("msg", "账号或密码不正确！");
+            response.setDataCustom("msg", "账号或密码不正确！");
             // response
             outputStream.write(JSON.toJSONString(response));
             outputStream.flush();
@@ -157,7 +165,7 @@ public class RequestProcessor implements Runnable {
         // response
         Response response = new Response();
         response.setStatus(ResponseStatus.OK);
-        response.setData("logoutUser", user);
+        response.setDataCustom("logoutUser", user);
         outputStream.write(JSON.toJSONString(response));
         outputStream.flush();
 
@@ -176,7 +184,7 @@ public class RequestProcessor implements Runnable {
         Response response = new Response();
         response.setStatus(ResponseStatus.OK);
         response.setType(ResponseType.CHAT);
-        response.setData("txtMsg", msg);
+        response.setDataCustom("txtMsg", msg);
 
         // getToUser == null -> groupChat
         // getToUser != null -> privateChat
