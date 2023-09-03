@@ -59,8 +59,9 @@ public class ChatFrame extends JFrame{
     }
 
     public void init(){
-        this.setTitle("JQ聊天室");
-        this.setSize(550, 500);
+
+        this.setTitle("chatroom聊天室");
+        this.setSize(750, 550);
         this.setResizable(false);
 
         //设置默认窗体在屏幕中央
